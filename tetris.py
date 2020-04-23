@@ -79,4 +79,9 @@ class Tetris:
             x += self.currentPos[0]
             y += self.currentPos[1]
             #constraints
+            #Hit Wall or Already Set Piece
+            if x < 0 or x >= Tetris.MAP_WIDTH or y < 0 or y >= Tetris.MAP_HEIGHT \
+                or self.board[y][x] == Tetris.MAP_TERRAIN:
+                return True
+        return False
 
