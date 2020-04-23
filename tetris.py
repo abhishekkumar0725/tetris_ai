@@ -60,7 +60,22 @@ class Tetris:
         self.board= [[0 for _ in range(Tetris.MAP_WIDTH)] for _ in range(Tetris.MAP_HEIGHT)]
         self.gameOver = False
         self.score = 0
+        self.nextPiece = self.selectPiece()
     
     def selectPiece(self):
         piece = int(np.random.random() * 7)
         return Tetris.TETRIMINOS[piece][0]
+    
+    def newPiece(self):
+        self.currentPiece = self.nextPiece
+        self.nextPiece = self.selectPiece()
+
+        self.currentPos = [3, 0]
+        self.currentRot = 0
+    
+    def collision(self):
+        for x, y in self.currentPiece:
+            x += self.currentPos[0]
+            y += self.currentPos[1]
+            #constraints
+            
