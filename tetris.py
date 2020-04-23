@@ -18,7 +18,7 @@ class Tetris:
         1 : { #I
             0: [(1, 0), (1, 1), (1, 2), (1, 3)],
             90: [(0, 1), (1, 1), (2, 1), (3, 1)],
-            180: [(2, 0), (2, 1), (2, 2), (2, 3)],
+            180: [(1, 0), (1, 1), (1, 2), (1, 3)],
             270: [(0, 2), (1, 2), (2, 2), (3, 2)] 
         },
         2 : { #T
@@ -63,7 +63,7 @@ class Tetris:
         self.nextPiece = self.selectPiece()
     
     def selectPiece(self):
-        piece = int(np.random.random() * 7)
+        piece = int(np.random.random() * 7)     #select random piece
         self.nextState = [piece, 0]             #piece, rotation
         return Tetris.TETRIMINOS[piece][0]
     
