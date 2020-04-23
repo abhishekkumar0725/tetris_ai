@@ -73,6 +73,9 @@ class Tetris:
 
         self.nextPiece = self.selectPiece()
         self.currentPos = [3, 0]
+
+        if self.collision():
+            self.gameOver = True
     
     def collision(self):
         for x, y in self.currentPiece:
