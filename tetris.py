@@ -64,13 +64,13 @@ class Tetris:
     
     def selectPiece(self):
         piece = int(np.random.random() * 7)
-        self.nextState = (piece, 0)             #piece, rotation
+        self.nextState = [piece, 0]             #piece, rotation
         return Tetris.TETRIMINOS[piece][0]
     
     def newPiece(self):
         self.currentPiece = self.nextPiece
         self.currentState = self.nextState
-        
+
         self.nextPiece = self.selectPiece()
         self.currentPos = [3, 0]
     
