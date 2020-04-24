@@ -89,9 +89,9 @@ class Tetris:
         return False
 
     def rotateCW(self):
-        self.currentState = (self.currentState[1] + 90) % 360
+        self.currentState[1] = (self.currentState[1] + 90) % 360
         self.currentPiece = Tetris.TETRIMINOS[self.currentState[0], self.currentState[1]]
 
     def rotateCCW(self):
-        self.currentState = (self.currentState[1] - 90) % 360
+        self.currentState[1] = (self.currentState[1] - 90) % 360
         self.currentPiece = Tetris.TETRIMINOS[self.currentState[0], self.currentState[1]]
