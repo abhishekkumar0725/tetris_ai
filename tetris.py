@@ -88,6 +88,11 @@ class Tetris:
                 return True
         return False
 
+    def placePiece(self):
+        locX, locY= self.currentPos
+        for x, y in self.currentPiece:
+            self.board[y+locY][x+locX] = Tetris.MAP_TERRAIN
+
     def rotateCW(self):
         self.currentState[1] = (self.currentState[1] + 90) % 360
         self.currentPiece = Tetris.TETRIMINOS[self.currentState[0], self.currentState[1]]
@@ -95,3 +100,12 @@ class Tetris:
     def rotateCCW(self):
         self.currentState[1] = (self.currentState[1] - 90) % 360
         self.currentPiece = Tetris.TETRIMINOS[self.currentState[0], self.currentState[1]]
+
+    def clearLines(self):
+        newBoard = [[0 for _ in range(Tetris.MAP_WIDTH)] for _ in range(Tetris.MAP_HEIGHT)]
+        for row in self.board:
+            if sum(row) !=  Tetris.MAP_WIDTH:
+                newBoard.append(row)
+        while len(newBoard) < 20:
+            newBoard.append([0 for _ in range(Tetris.MAP_WIDTH)])
+        self.board = newBoard
