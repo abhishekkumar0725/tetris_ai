@@ -1,4 +1,8 @@
 import numpy as np
+import time
+import cv2
+from PIL import Image
+
 
 class Tetris:
 
@@ -53,8 +57,17 @@ class Tetris:
         },
     }
 
+    COLORS = [
+        #R G B
+        (255, 255, 255),
+        (74, 226, 239),
+        (255, 86, 102)
+    ]
+
     def __init__(self):
         self.newGame()
+        Tetris.COLORS = [color[::-1] for color in Tetris.COLORS] 
+        print(Tetris.COLORS)
 
     def newGame(self):
         self.board= [[0 for _ in range(Tetris.MAP_WIDTH)] for _ in range(Tetris.MAP_HEIGHT)]
@@ -106,6 +119,45 @@ class Tetris:
         for row in self.board:
             if sum(row) !=  Tetris.MAP_WIDTH:
                 newBoard.append(row)
-        while len(newBoard) < 20:
+        lines_cleared = 20 - len(newBoard)
+        for _ in range(lines_cleared):
             newBoard.append([0 for _ in range(Tetris.MAP_WIDTH)])
         self.board = newBoard
+        return lines_cleared
+
+    def getRenderBoard(self):
+        display = [row[:] for row in self.board]
+        locX, locY = self.currentPos
+        for x, y in self.currentPiece:
+            display[y+locY][x+locX] = Tetris.MAP_PLAYER
+        return display
+
+    def render(self):
+        #Render numpy array
+        display = self.getRenderBoard()
+        img = []
+        for row in display:
+            img.append([Tetris.COLORS[square] for square in row])
+        img = np.array(img).reshape(Tetris.MAP_HEIGHT, Tetris.MAP_WIDTH, 3).astype(np.uint8)
+        img = Image.fromarray(img, 'RGB')
+        img = img.resize((Tetris.MAP_HEIGHT*10, Tetris.MAP_WIDTH*10))
+        img = np.array(img)
+        cv2.imshow('image', np.array(img))
+        cv2.waitKey(1)
+    
+    def play(self, render = False):
+        while not self.collision():
+            if render:
+                self.render()
+                sleep(1) #Renders 1 second time
+            self.currentPos[1] += 1
+        
+        self.currentPos[1] -= 1
+        
+        self.placePiece()
+        cleared = self.clearLines()
+        score = 4 ** cleared #scoring is exponential, but we can change
+        self.score += score
+
+        self.newPiece()
+        return score, self.gameOver
