@@ -74,6 +74,7 @@ class Tetris:
         self.gameOver = False
         self.score = 0
         self.nextPiece = self.selectPiece()
+        self.newPiece()
 
     def selectPiece(self):
         piece = int(np.random.random() * 7)     #select random piece
@@ -149,7 +150,7 @@ class Tetris:
         while not self.collision():
             if render:
                 self.render()
-                sleep(1) #Renders 1 second time
+                time.sleep(1) #Renders 1 second time
             self.currentPos[1] += 1
         
         self.currentPos[1] -= 1
@@ -161,3 +162,6 @@ class Tetris:
 
         self.newPiece()
         return score, self.gameOver
+
+game = Tetris()
+game.play(render=True)
