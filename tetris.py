@@ -67,7 +67,7 @@ class Tetris:
     def __init__(self):
         self.newGame()
         Tetris.COLORS = [color[::-1] for color in Tetris.COLORS] 
-        print(Tetris.COLORS)
+        self.round = 1
 
     def newGame(self):
         self.board= [[0 for _ in range(Tetris.MAP_WIDTH)] for _ in range(Tetris.MAP_HEIGHT)]
@@ -115,18 +115,20 @@ class Tetris:
         self.currentState[1] = (self.currentState[1] - 90) % 360
         self.currentPiece = Tetris.TETRIMINOS[self.currentState[0], self.currentState[1]]
 
+    #fix
     def clearLines(self):
-        newBoard = [[0 for _ in range(Tetris.MAP_WIDTH)] for _ in range(Tetris.MAP_HEIGHT)]
-        for row in self.board:
-            if sum(row) !=  Tetris.MAP_WIDTH:
-                newBoard.append(row)
-        lines_cleared = 20 - len(newBoard)
-        for _ in range(lines_cleared):
-            newBoard.append([0 for _ in range(Tetris.MAP_WIDTH)])
-        self.board = newBoard
-        return lines_cleared
+        lines  = [row for row in range(Tetris.MAP_HEIGHT) if sum(self.board[row])==Tetris.MAP_WIDTH]
+        if not lines:
+            return 0
+        lines = lines.sort(reverse=True)
+        for line in lines:
+            self.board.remove(line)
+        for _ in line:
+            self.board.insert(0, [0 for _ in range(Tetris.MAP_WIDTH)])
+        return len(lines)
 
     def getRenderBoard(self):
+        display = []
         display = [row[:] for row in self.board]
         locX, locY = self.currentPos
         for x, y in self.currentPiece:
@@ -147,10 +149,11 @@ class Tetris:
         cv2.waitKey(1)
     
     def play(self, render = False):
+        #plays individual round
         while not self.collision():
             if render:
                 self.render()
-                time.sleep(1) #Renders 1 second time
+                time.sleep(.1) #Renders 1 second time
             self.currentPos[1] += 1
         
         self.currentPos[1] -= 1
@@ -163,5 +166,10 @@ class Tetris:
         self.newPiece()
         return score, self.gameOver
 
+    def stupidPlay(self):
+        while not self.gameOver:
+            self.play(render=True)
+            print(self.score)
+
 game = Tetris()
-game.play(render=True)
+game.stupidPlay()
