@@ -106,6 +106,16 @@ class Tetris:
         locX, locY= self.currentPos
         for x, y in self.currentPiece:
             self.board[y+locY][x+locX] = Tetris.MAP_TERRAIN
+    
+    def moveLeft(self):
+        self.currentPos[0] -= 1
+        if self.collision():
+            self.currentPos += 1
+
+    def moveRight(self):
+        self.currentPos[0] += 1
+        if self.collision():
+            self.currentPos -= 1
 
     def rotateCW(self):
         self.currentState[1] = (self.currentState[1] + 90) % 360
