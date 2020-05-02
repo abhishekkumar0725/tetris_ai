@@ -153,10 +153,16 @@ class Tetris:
             img.append([Tetris.COLORS[square] for square in row])
         img = np.array(img).reshape(Tetris.MAP_HEIGHT, Tetris.MAP_WIDTH, 3).astype(np.uint8)
         img = Image.fromarray(img, 'RGB')
-        img = img.resize((Tetris.MAP_HEIGHT*10, Tetris.MAP_WIDTH*10))
+        img = img.resize((Tetris.MAP_HEIGHT*20, Tetris.MAP_WIDTH*70))
         img = np.array(img)
         cv2.imshow('image', np.array(img))
         cv2.waitKey(1)
+
+    def getHeights(self):
+        heights = []
+
+        for column in zip(*self.board):
+            height = sum(column)
     
     def play(self, render = False):
         #plays individual round
