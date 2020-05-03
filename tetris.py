@@ -66,7 +66,7 @@ class Tetris:
 
     def __init__(self):
         self.newGame()
-        Tetris.COLORS = [color[::-1] for color in Tetris.COLORS] 
+        Tetris.COLORS = [color[::-1] for color in Tetris.COLORS]
         self.round = 1
 
     def newGame(self):
@@ -106,7 +106,7 @@ class Tetris:
         locX, locY= self.currentPos
         for x, y in self.currentPiece:
             self.board[y+locY][x+locX] = Tetris.MAP_TERRAIN
-    
+
     def moveLeft(self):
         self.currentPos[0] -= 1
         if self.collision():
@@ -133,7 +133,7 @@ class Tetris:
         lines = lines.sort(reverse=True)
         for line in lines:
             self.board.remove(line)
-        for _ in line:
+        for _ in lines:
             self.board.insert(0, [0 for _ in range(Tetris.MAP_WIDTH)])
         return len(lines)
 
@@ -154,7 +154,6 @@ class Tetris:
         img = np.array(img).reshape(Tetris.MAP_HEIGHT, Tetris.MAP_WIDTH, 3).astype(np.uint8)
         img = Image.fromarray(img, 'RGB')
         img = img.resize((Tetris.MAP_HEIGHT*20, Tetris.MAP_WIDTH*70))
-        img = np.array(img)
         cv2.imshow('image', np.array(img))
         cv2.waitKey(1)
 
@@ -163,7 +162,20 @@ class Tetris:
 
         for column in zip(*self.board):
             height = sum(column)
-    
+
+    def numHoles(self):
+        totalHoles = 0
+        for column in zip(*self.board):
+            currentHoles = 0
+            for i in range(Tetris.MAP_HEIGHT-1, -1, -1):
+                if column[i] == Tetris.MAP_EMPTY:
+                    currentHoles += 1
+                elif column[i] == Tetris.MAP_TERRAIN:
+                    totalHoles += currentHoles
+                    currentHoles = 0
+        return totalHoles
+
+
     def play(self, render = False):
         #plays individual round
         while not self.collision():
@@ -171,9 +183,9 @@ class Tetris:
                 self.render()
                 time.sleep(.1) #Renders 1 second time
             self.currentPos[1] += 1
-        
+
         self.currentPos[1] -= 1
-        
+
         self.placePiece()
         cleared = self.clearLines()
         score = 4 ** cleared #scoring is exponential, but we can change
