@@ -162,6 +162,8 @@ class Tetris:
 
         for column in zip(*self.board):
             height = sum(column)
+        
+        return heights
 
     def numHoles(self):
         totalHoles = 0
@@ -181,7 +183,7 @@ class Tetris:
         while not self.collision():
             if render:
                 self.render()
-                time.sleep(.1) #Renders 1 second time
+                time.sleep(.1) #Renders .1 second time
             self.currentPos[1] += 1
 
         self.currentPos[1] -= 1
