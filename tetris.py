@@ -125,7 +125,6 @@ class Tetris:
         self.currentState[1] = (self.currentState[1] - 90) % 360
         self.currentPiece = Tetris.TETRIMINOS[self.currentState[0], self.currentState[1]]
 
-    #fix
     def clearLines(self):
         lines  = [row for row in range(Tetris.MAP_HEIGHT) if sum(self.board[row])==Tetris.MAP_WIDTH]
         if not lines:
@@ -159,11 +158,17 @@ class Tetris:
 
     def getHeights(self):
         heights = []
-
         for column in zip(*self.board):
             height = sum(column)
-        
+
         return heights
+
+    def getBumpiness(self):
+        heights = self.getHeights()
+        bumps = []
+        for i in range(len(heights)-1):
+            bumps.append(abs(heights[i+1]-heights[i]))
+        return bumps
 
     def numHoles(self):
         totalHoles = 0
@@ -176,6 +181,12 @@ class Tetris:
                     totalHoles += currentHoles
                     currentHoles = 0
         return totalHoles
+
+    def getFeautres(self):
+        holes = self.numHoles()
+        height = self.getHeights()
+        bumps = self.getBumpiness()
+        return [self.board, holes, bumps, height]
 
 
     def play(self, render = False):
