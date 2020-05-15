@@ -28,8 +28,8 @@ class Agent:
         
         return model
     
-    def add_sample(self, state, next_state, reward, complete):
-        self.samples.append([state, next_state, reward, complete])
+    def add_sample(self, state, next_state, reward, gameOver):
+        self.samples.append([state, next_state, reward, gameOver])
         if len(self.samples) > 10000:
             self.samples.pop(0)
 

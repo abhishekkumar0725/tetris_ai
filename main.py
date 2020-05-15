@@ -33,9 +33,9 @@ def run():
                     break
             
             reward, gameOver = game.play(xLoc=bestAction[0], degrees=bestAction[1], render=renderEpisode)
-            dqn.add_sample([current, bestState, reward, gameOver])
+            dqn.add_sample(current, bestState, reward, gameOver)
             current = bestState
-            scores.append[reward]
+            scores.append(reward)
         
         if episode % trainIteration == 0:
             dqn.train(batch_size=batchSize, epoch=epoch)

@@ -207,7 +207,10 @@ class Tetris:
             board = [row[:] for row in self.board]
             locX, locY = pos
             for x, y in piece:
-                display[y+locY][x+locX] = Tetris.MAP_PLAYER
+                xPos = min(Tetris.MAP_WIDTH-1, max(0, x+locX))
+                yPos = min(Tetris.MAP_HEIGHT-1, max(0, y+locY))
+                print(str(xPos) +', ' + str(yPos))
+                board[yPos][xPos] = Tetris.MAP_PLAYER
             return board
 
         for i in range(3):
@@ -223,7 +226,7 @@ class Tetris:
                 if pos[1] >= 0:
                     newBoard = potentialBoard(piece, pos)
                     features = self.getFeautres(board=newBoard)
-                    states[(xLoc, piece)] = features
+                    states[(xLoc, 90*i)] = features
 
         return states
 
