@@ -93,7 +93,7 @@ class Tetris:
             self.gameOver = True
 
     def collision(self):
-        return self.potentialCollision(self.currentPiece, self.currentState[1])
+        return self.potentialCollision(self.currentPiece, self.currentPos)
     
     def potentialCollision(self, piece, pos):
         for x, y in piece:
@@ -211,14 +211,14 @@ class Tetris:
             return board
 
         for i in range(3):
-            piece = Tetris.TETRIMINOS[self.currentState[0], self.currentState[1] + 90*i]
+            piece = Tetris.TETRIMINOS[self.currentState[0]][self.currentState[1] + 90*i]
             lowerX = min([p[0] for p in self.currentPiece])
             upperX = max([p[0] for p in self.currentPiece])
 
             for xLoc in range(-1*lowerX, Tetris.MAP_WIDTH - upperX):
                 pos = [xLoc, -1]
                 while not self.potentialCollision(piece, pos):
-                    pos += 1
+                    pos[1] += 1
                 
                 if pos[1] >= 0:
                     newBoard = potentialBoard(piece, pos)
@@ -240,7 +240,6 @@ class Tetris:
                 self.render()
                 time.sleep(.1) #Renders .1 second time
             self.currentPos[1] += 1
-
         self.currentPos[1] -= 1
 
         self.placePiece()
