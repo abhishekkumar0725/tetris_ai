@@ -75,6 +75,7 @@ class Tetris:
         self.score = 0
         self.nextPiece = self.selectPiece()
         self.newPiece()
+        return self.getFeautres()
 
     def selectPiece(self):
         piece = int(np.random.random() * 7)     #select random piece
@@ -92,9 +93,12 @@ class Tetris:
             self.gameOver = True
 
     def collision(self):
-        for x, y in self.currentPiece:
-            x += self.currentPos[0]
-            y += self.currentPos[1]
+        return self.potentialCollision(self.currentPiece, self.currentState[1])
+    
+    def potentialCollision(self, piece, pos):
+        for x, y in piece:
+            x += pos[0]
+            y += pos[1]
             #constraints
             #Hit Wall or Already Set Piece
             if x < 0 or x >= Tetris.MAP_WIDTH or y < 0 or y >= Tetris.MAP_HEIGHT \
@@ -156,23 +160,29 @@ class Tetris:
         cv2.imshow('image', np.array(img))
         cv2.waitKey(1)
 
-    def getHeights(self):
+    def getHeights(self, board=None):
+        if board == None:
+            board  = self.board
         heights = []
-        for column in zip(*self.board):
+        for column in zip(*board):
             height = sum(column)
 
         return heights
 
-    def getBumpiness(self):
-        heights = self.getHeights()
+    def getBumpiness(self, board=None):
+        if board == None:
+            board  = self.board
+        heights = self.getHeights(board)
         bumps = []
         for i in range(len(heights)-1):
             bumps.append(abs(heights[i+1]-heights[i]))
         return bumps
 
-    def numHoles(self):
+    def numHoles(self, board=None):
+        if board == None:
+            board  = self.board
         totalHoles = 0
-        for column in zip(*self.board):
+        for column in zip(*board):
             currentHoles = 0
             for i in range(Tetris.MAP_HEIGHT-1, -1, -1):
                 if column[i] == Tetris.MAP_EMPTY:
@@ -182,14 +192,48 @@ class Tetris:
                     currentHoles = 0
         return totalHoles
 
-    def getFeautres(self):
-        holes = self.numHoles()
-        height = self.getHeights()
-        bumps = self.getBumpiness()
-        return [self.board, holes, bumps, height]
+    def getFeautres(self, board=None):
+        if board == None:
+            board  = self.board
+        holes = self.numHoles(board)
+        height = self.getHeights(board)
+        bumps = self.getBumpiness(board)
+        return [board, holes, bumps, height]
 
+    def getLegalActions(self):
+        states= {}
+        def potentialBoard(piece, pos):
+            board = []
+            board = [row[:] for row in self.board]
+            locX, locY = pos
+            for x, y in piece:
+                display[y+locY][x+locX] = Tetris.MAP_PLAYER
+            return board
 
-    def play(self, render = False):
+        for i in range(3):
+            piece = Tetris.TETRIMINOS[self.currentState[0], self.currentState[1] + 90*i]
+            lowerX = min([p[0] for p in self.currentPiece])
+            upperX = max([p[0] for p in self.currentPiece])
+
+            for xLoc in range(-1*lowerX, Tetris.MAP_WIDTH - upperX):
+                pos = [xLoc, -1]
+                while not self.potentialCollision(piece, pos):
+                    pos += 1
+                
+                if pos[1] >= 0:
+                    newBoard = potentialBoard(piece, pos)
+                    features = self.getFeautres(board=newBoard)
+                    states[(xLoc, piece)] = features
+
+        return states
+
+    def play(self, xLoc=None, degrees=None, render = False):
+        if xLoc != None:
+            self.currentPos = [xLoc, 0]
+        if degrees != None:
+            while self.currentState[1] != degrees:
+                self.rotateCW()
+
         #plays individual round
         while not self.collision():
             if render:
@@ -211,6 +255,3 @@ class Tetris:
         while not self.gameOver:
             self.play(render=True)
             print(self.score)
-
-game = Tetris()
-game.stupidPlay()

@@ -1,6 +1,7 @@
 from tetris import Tetris
 from agent import Agent
 import numpy as np
+from datetime import datetime
 from keras.callbacks import TensorBoard
 from tensorflow.summary import FileWriter
 
@@ -25,6 +26,22 @@ def run():
     batch_size = 32
     epoch = 5
 
-    dqn = Agent()
+    dqn = Agent(4, discount, epsilon, nuerons, activation_functions)
+
+    log_dir = f'logs/tetris-nn={str(nuerons)}-mem={10000}-bs={batch_size}-e={epoch}-{datetime.now().strftime("%Y%m%d-%H%M%S")}'
+    log = Board(log_dir=log_dir)
+
+    episodes = 2000
+    scores = []
+    for episode in range(episodes):
+        current = game.newGame()
+        done, step = False, 0
+
+        while not done:
+            actions = game.getLegalActions()
+            bestState = dqn.best_state(actions.values())
+
+            for action, state in action.items():
+                if state == bestState
 
 

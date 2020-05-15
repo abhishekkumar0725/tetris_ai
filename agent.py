@@ -2,11 +2,11 @@ import numpy as np
 import tensorflow as tf
 import random
 from keras.layers import Dense
-from keras.model import Sequential, save_model, load_model
+from keras.models import Sequential, save_model, load_model
 
 class Agent:
     
-    def __init__(self, state_size, discount=0.9, epsilon=.99, nuerons=[32,32,32], 
+    def __init__(self, state_size=4, discount=0.9, epsilon=.99, nuerons=[32,32,32], 
         activation_functions=['relu', 'relu', 'relu', 'linear']):
         self.state_size = state_size
         self.discount = discount
@@ -17,19 +17,21 @@ class Agent:
         self.samples = []
 
         self.model = self.build()
-    
+
     def build(self):
         model = Sequential()
-        model.add(Dense(self.neurons[0], input_dim=self.state, activation=self.activations_functions[0]))
+        model.add(Dense(self.nuerons[0], input_dim=self.state_size, activation=self.activations_functions[0]))
         for i in range(1,self.layers):
             model.add(Dense(self.nuerons[i], activation=self.activations_functions[i]))
-        model.add(1, activation=self.activations_functions[self.layers+1])
+        model.add(Dense(1, activation=self.activations_functions[self.layers]))
         model.compile(loss='mse', optimizer='adam')
         
         return model
     
     def add_sample(self, state, next_state, reward, complete):
         self.samples.append([state, next_state, reward, complete])
+        if len(self.samples) > 10000:
+            self.samples.pop(0)
 
     def train(self, batch_size=64, epoch=5):
         if len(self.samples) >= batch_size:
@@ -51,20 +53,20 @@ class Agent:
             if self.epsilon > .01:
                 self.epsilon -= .05*self.epsilon
         
-        def best_state(self, states):
-            best_score = -1*float('inf')
-            best_state =  None
+    def best_state(self, states):
+        best_score = -1*float('inf')
+        best_state =  None
 
-            for state in states:
-                score = self.model.predict(np.reshape(state, [1, self.state_size]))[0]
-                if score > best_score:
-                    best_score = score
-                    best_state = state
+        for state in states:
+            score = self.model.predict(np.reshape(state, [1, self.state_size]))[0]
+            if score > best_score:
+                best_score = score
+                best_state = state
             
-            return best_state
+        return best_state
         
-        def predict(self, state):
-            state = np.reshape(state, [1, self.state_size])
-            if np.random.rand() < self.epsilon:
-                return np.random.rand()
-            return self.model.predict(state)[0]
+    def predict(self, state):
+        state = np.reshape(state, [1, self.state_size])
+        if np.random.rand() < self.epsilon:
+            return np.random.rand()
+        return self.model.predict(state)[0]
