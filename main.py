@@ -31,6 +31,7 @@ def run():
                 if actions[action] == bestState:
                     bestAction = action
                     break
+            print(bestState)
             reward, gameOver = game.play(xLoc=bestAction[0], degrees=bestAction[1], render=renderEpisode)
             dqn.add_sample(current, bestState, reward, gameOver)
             current = bestState

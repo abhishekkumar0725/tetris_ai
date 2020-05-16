@@ -168,7 +168,10 @@ class Tetris:
             board  = self.board
         heights = []
         for column in zip(*board):
-            heights.append(sum(column))
+            if Tetris.MAP_TERRAIN not in column:
+                continue
+            top = column.index(Tetris.MAP_TERRAIN)
+            heights.append(Tetris.MAP_HEIGHT-top)
 
         return heights
 
