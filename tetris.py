@@ -138,7 +138,6 @@ class Tetris:
         lines.sort(reverse=True)
         for line in lines:
             board.pop(line)
-        for _ in lines:
             board.insert(0, [0 for _ in range(Tetris.MAP_WIDTH)])
         if board == None:
             self.board=board
@@ -169,7 +168,7 @@ class Tetris:
             board  = self.board
         heights = []
         for column in zip(*board):
-            height = sum(column)
+            heights.append(sum(column))
 
         return heights
 
@@ -187,13 +186,12 @@ class Tetris:
             board  = self.board
         totalHoles = 0
         for column in zip(*board):
-            currentHoles = 0
-            for i in range(Tetris.MAP_HEIGHT-1, -1, -1):
-                if column[i] == Tetris.MAP_EMPTY:
-                    currentHoles += 1
-                elif column[i] == Tetris.MAP_TERRAIN:
-                    totalHoles += currentHoles
-                    currentHoles = 0
+            if Tetris.MAP_TERRAIN not in column:
+                continue
+            top = column.index(Tetris.MAP_TERRAIN)
+            for i in range(top, Tetris.MAP_HEIGHT):
+                if column[i] == 0:
+                    totalHoles += 1
         return totalHoles
 
     def getFeautres(self, board=None):
@@ -217,7 +215,7 @@ class Tetris:
                 board[yPos][xPos] = Tetris.MAP_PLAYER
             return board
 
-        for i in range(3):
+        for i in range(4):
             piece = Tetris.TETRIMINOS[self.currentState[0]][self.currentState[1] + 90*i]
             lowerX = min([p[0] for p in self.currentPiece])
             upperX = max([p[0] for p in self.currentPiece])
@@ -252,7 +250,7 @@ class Tetris:
 
         self.placePiece()
         cleared = self.clearLines()
-        score = 4 ** cleared #scoring is exponential, but we can change
+        score = 1 + 4 ** cleared #scoring is exponential, but we can change
         self.score += score
 
         self.newPiece()

@@ -8,8 +8,8 @@ def run():
     episodes = 2000
     discount=0.9 
     epsilon=.99
-    nuerons=[32,32,32]
-    activation_functions=['relu', 'relu', 'relu', 'linear']
+    nuerons=[32,32]
+    activation_functions=['relu', 'relu', 'linear']
     batchSize = 32
     epoch = 5
     trainIteration = 1
@@ -31,7 +31,6 @@ def run():
                 if actions[action] == bestState:
                     bestAction = action
                     break
-            
             reward, gameOver = game.play(xLoc=bestAction[0], degrees=bestAction[1], render=renderEpisode)
             dqn.add_sample(current, bestState, reward, gameOver)
             current = bestState
@@ -39,6 +38,7 @@ def run():
         
         if episode % trainIteration == 0:
             dqn.train(batch_size=batchSize, epoch=epoch)
+        if renderEpisode:
             print(episode)
         
 run()
