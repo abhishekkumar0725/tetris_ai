@@ -36,7 +36,7 @@ class Agent:
     def train(self, batch_size=64, epoch=5):
         if len(self.samples) >= batch_size:
             batch = random.sample(self.samples, batch_size)
-            next_state = [sample[1] for sample in batch]
+            next_state = np.array([sample[1] for sample in batch])
             q_values = [prediction[0] for prediction in self.model.predict(next_state)]
 
             rewards = []
@@ -55,7 +55,7 @@ class Agent:
         
     def best_state(self, states):
         best_score = -1*float('inf')
-        best_state =  None
+        best_state = list(states)[0]
 
         for state in states:
             score = self.model.predict(np.reshape(state, [1, self.state_size]))[0]

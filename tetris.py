@@ -123,21 +123,25 @@ class Tetris:
 
     def rotateCW(self):
         self.currentState[1] = (self.currentState[1] + 90) % 360
-        self.currentPiece = Tetris.TETRIMINOS[self.currentState[0], self.currentState[1]]
+        self.currentPiece = Tetris.TETRIMINOS[self.currentState[0]][self.currentState[1]]
 
     def rotateCCW(self):
         self.currentState[1] = (self.currentState[1] - 90) % 360
-        self.currentPiece = Tetris.TETRIMINOS[self.currentState[0], self.currentState[1]]
+        self.currentPiece = Tetris.TETRIMINOS[self.currentState[0]][self.currentState[1]]
 
-    def clearLines(self):
-        lines  = [row for row in range(Tetris.MAP_HEIGHT) if sum(self.board[row])==Tetris.MAP_WIDTH]
-        if not lines:
+    def clearLines(self, board=None):
+        if board == None:
+            board = self.board
+        lines  = [row for row in range(Tetris.MAP_HEIGHT) if sum(board[row])==Tetris.MAP_WIDTH]
+        if lines == None:
             return 0
-        lines = lines.sort(reverse=True)
+        lines.sort(reverse=True)
         for line in lines:
-            self.board.remove(line)
+            board.pop(line)
         for _ in lines:
-            self.board.insert(0, [0 for _ in range(Tetris.MAP_WIDTH)])
+            board.insert(0, [0 for _ in range(Tetris.MAP_WIDTH)])
+        if board == None:
+            self.board=board
         return len(lines)
 
     def getRenderBoard(self):
@@ -198,7 +202,8 @@ class Tetris:
         holes = self.numHoles(board)
         height = self.getHeights(board)
         bumps = self.getBumpiness(board)
-        return [board, holes, bumps, height]
+        lines = self.clearLines(board)
+        return [lines, holes, sum(bumps), sum(height)]
 
     def getLegalActions(self):
         states= {}
@@ -207,9 +212,8 @@ class Tetris:
             board = [row[:] for row in self.board]
             locX, locY = pos
             for x, y in piece:
-                xPos = min(Tetris.MAP_WIDTH-1, max(0, x+locX))
-                yPos = min(Tetris.MAP_HEIGHT-1, max(0, y+locY))
-                print(str(xPos) +', ' + str(yPos))
+                xPos = x+locX
+                yPos = y+locY
                 board[yPos][xPos] = Tetris.MAP_PLAYER
             return board
 
@@ -219,9 +223,10 @@ class Tetris:
             upperX = max([p[0] for p in self.currentPiece])
 
             for xLoc in range(-1*lowerX, Tetris.MAP_WIDTH - upperX):
-                pos = [xLoc, -1]
+                pos = [xLoc, 0]
                 while not self.potentialCollision(piece, pos):
                     pos[1] += 1
+                pos[1] -= 1
                 
                 if pos[1] >= 0:
                     newBoard = potentialBoard(piece, pos)
@@ -241,7 +246,7 @@ class Tetris:
         while not self.collision():
             if render:
                 self.render()
-                time.sleep(.1) #Renders .1 second time
+                time.sleep(.01) #Renders .01 second time
             self.currentPos[1] += 1
         self.currentPos[1] -= 1
 
@@ -256,4 +261,3 @@ class Tetris:
     def stupidPlay(self):
         while not self.gameOver:
             self.play(render=True)
-            print(self.score)

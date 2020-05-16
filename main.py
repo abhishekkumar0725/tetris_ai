@@ -27,8 +27,8 @@ def run():
             bestState = dqn.best_state(actions.values())
 
             bestAction = [4, 0]
-            for action, state in actions.items():
-                if actions[action, state] == bestState:
+            for action in actions.keys():
+                if actions[action] == bestState:
                     bestAction = action
                     break
             
@@ -39,6 +39,7 @@ def run():
         
         if episode % trainIteration == 0:
             dqn.train(batch_size=batchSize, epoch=epoch)
+            print(episode)
         
 run()
         
