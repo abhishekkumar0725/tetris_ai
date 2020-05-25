@@ -1,7 +1,5 @@
 from tetris import Tetris
 from agent import Agent
-import numpy as np
-from datetime import datetime
 
 def run():
     game = Tetris()
@@ -33,10 +31,9 @@ def run():
         
         if episode % trainIteration == 0:
             dqn.train(batch_size=batchSize, epoch=epoch)
-        if renderEpisode:
-            print(episode)
-        
-run()
+
+if __name__ == '__main__':
+    run()
         
 
         
