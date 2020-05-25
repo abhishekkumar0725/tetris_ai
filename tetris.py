@@ -159,8 +159,9 @@ class Tetris:
             img.append([Tetris.COLORS[square] for square in row])
         img = np.array(img).reshape(Tetris.MAP_HEIGHT, Tetris.MAP_WIDTH, 3).astype(np.uint8)
         img = Image.fromarray(img, 'RGB')
-        img = img.resize((Tetris.MAP_HEIGHT*20, Tetris.MAP_WIDTH*70))
-        cv2.imshow('image', np.array(img))
+        img = np.array(img.resize((Tetris.MAP_HEIGHT*20, Tetris.MAP_WIDTH*70)))
+        cv2.putText(img, str(self.score), (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+        cv2.imshow('image', img)
         cv2.waitKey(1)
 
     def getHeights(self, board=None):
@@ -204,6 +205,8 @@ class Tetris:
         height = self.getHeights(board)
         bumps = self.getBumpiness(board)
         lines = self.clearLines(board)
+        if max(height) > 17:
+            return [lines, holes, sum(bumps), sum(height)**2]
         return [lines, holes, sum(bumps), sum(height)]
 
     def getLegalActions(self):
@@ -233,7 +236,6 @@ class Tetris:
                     newBoard = potentialBoard(piece, pos)
                     features = self.getFeautres(board=newBoard)
                     states[(xLoc, 90*i)] = features
-        print(states)
         return states
 
     def play(self, xLoc=None, degrees=None, render = False):
@@ -255,7 +257,7 @@ class Tetris:
         cleared = self.clearLines()
         score = 1 + 4**cleared #scoring is exponential, but we can change
         self.score += score
-
+        print(self.score)
         self.newPiece()
         return score, self.gameOver
 

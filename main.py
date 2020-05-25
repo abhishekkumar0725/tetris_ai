@@ -8,8 +8,8 @@ def run():
     episodes = 2000
     discount=0.9 
     epsilon=.99
-    nuerons=[32,32]
-    activation_functions=['relu', 'relu', 'linear']
+    nuerons=[32, 32, 32]
+    activation_functions=['relu', 'relu', 'relu', 'linear']
     batchSize = 32
     epoch = 5
     trainIteration = 1
@@ -20,7 +20,7 @@ def run():
     for episode in range(episodes):
         current = game.newGame()
         gameOver, step = False, 0
-        renderEpisode = episode % 100 == 0
+        renderEpisode = episode % 50 == 0
 
         while not gameOver:
             actions = game.getLegalActions()
