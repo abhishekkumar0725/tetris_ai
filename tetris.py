@@ -205,8 +205,6 @@ class Tetris:
         height = self.getHeights(board)
         bumps = self.getBumpiness(board)
         lines = self.clearLines(board)
-        if max(height) > 17:
-            return [lines, holes, sum(bumps), sum(height)**2]
         return [lines, holes, sum(bumps), sum(height)]
 
     def getLegalActions(self):
