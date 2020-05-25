@@ -257,7 +257,6 @@ class Tetris:
         cleared = self.clearLines()
         score = 1 + 4**cleared #scoring is exponential, but we can change
         self.score += score
-        print(self.score)
         self.newPiece()
         return score, self.gameOver
 
