@@ -169,6 +169,7 @@ class Tetris:
         heights = []
         for column in zip(*board):
             if Tetris.MAP_TERRAIN not in column:
+                heights.append(0)
                 continue
             top = column.index(Tetris.MAP_TERRAIN)
             heights.append(Tetris.MAP_HEIGHT-top)
@@ -177,7 +178,7 @@ class Tetris:
 
     def getBumpiness(self, board=None):
         if board == None:
-            board  = self.board
+            board = self.board
         heights = self.getHeights(board)
         bumps = []
         for i in range(len(heights)-1):
@@ -189,17 +190,16 @@ class Tetris:
             board  = self.board
         totalHoles = 0
         for column in zip(*board):
-            if Tetris.MAP_TERRAIN not in column:
-                continue
-            top = column.index(Tetris.MAP_TERRAIN)
-            for i in range(top, Tetris.MAP_HEIGHT):
-                if column[i] == 0:
-                    totalHoles += 1
+            i = 0
+            while i < Tetris.MAP_HEIGHT and column[i] != Tetris.MAP_TERRAIN:
+                i += 1
+            totalHoles += len([x for x in column[i+1:] if x == Tetris.MAP_EMPTY])
+
         return totalHoles
 
     def getFeautres(self, board=None):
         if board == None:
-            board  = self.board
+            board = self.board
         holes = self.numHoles(board)
         height = self.getHeights(board)
         bumps = self.getBumpiness(board)
@@ -215,7 +215,7 @@ class Tetris:
             for x, y in piece:
                 xPos = x+locX
                 yPos = y+locY
-                board[yPos][xPos] = Tetris.MAP_PLAYER
+                board[yPos][xPos] = Tetris.MAP_TERRAIN
             return board
 
         for i in range(4):
@@ -233,7 +233,7 @@ class Tetris:
                     newBoard = potentialBoard(piece, pos)
                     features = self.getFeautres(board=newBoard)
                     states[(xLoc, 90*i)] = features
-
+        print(states)
         return states
 
     def play(self, xLoc=None, degrees=None, render = False):
@@ -253,7 +253,7 @@ class Tetris:
 
         self.placePiece()
         cleared = self.clearLines()
-        score = 1 + 4 ** cleared #scoring is exponential, but we can change
+        score = 1 + 4**cleared #scoring is exponential, but we can change
         self.score += score
 
         self.newPiece()

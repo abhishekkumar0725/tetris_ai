@@ -52,18 +52,24 @@ class Agent:
             self.model.fit(train_states, train_rewards, batch_size=batch_size, epochs=epoch, verbose=0)
             if self.epsilon > .01:
                 self.epsilon -= .05*self.epsilon
-        
-    def best_state(self, states):
-        best_score = -1*float('inf')
-        best_state = list(states)[0]
 
-        for state in states:
-            score = self.model.predict(np.reshape(state, [1, self.state_size]))[0]
+    def best_state(self, actions, states):
+        best_score = -1*float('inf')
+        best_state = None
+        best_action = None
+
+        if np.random.rand() <= self.epsilon:
+            index = random.choice([i for i in range(len(actions))])
+            return actions[index], states[index]
+
+        for i, state in enumerate(states):
+            score = self.predict(state)
             if score > best_score:
+                best_action = actions[i]
                 best_score = score
                 best_state = state
             
-        return best_state
+        return best_action, best_state
         
     def predict(self, state):
         state = np.reshape(state, [1, self.state_size])
